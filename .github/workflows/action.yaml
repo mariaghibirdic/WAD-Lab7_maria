@@ -1,8 +1,12 @@
 name: Lab 7
-#TODO The pipeline should be triggered only on push to a "test" branch
+
 on:
   push:
+    branches:
+      - test
   pull_request:
+    branches:
+      - test
 
 jobs:
   test:
@@ -14,16 +18,16 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17
           cache: gradle
 
       - name: Grant execute permission for Gradle Wrapper
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
-      # TODO: Run backend tests in the pipeline
+      - name: Run backend tests
+        run: ./gradlew test
+        env:
+          MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
 
-      # TODO: Run the Jacoco report in the pipeline (Jacoco already exists)
-
-      # TODO: Set GitHub secrets and read them in the pipeline (for the environmentTest)
+      - name: Generate JaCoCo report
+        run: ./gradlew jacocoTestReport
